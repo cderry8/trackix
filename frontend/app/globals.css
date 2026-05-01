@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --surface: 250 250 252;
+  --surface-muted: 240 240 245;
+  --ink: 15 15 18;
+  --ink-muted: 82 82 91;
+  --accent: 59 130 246;
+  --accent-dim: 37 99 235;
+  --grid-line: 15 23 42;
+  --glow-1: 59 130 246;
+  --glow-2: 168 85 247;
+}
+
+.dark {
+  --surface: 12 12 14;
+  --surface-muted: 22 22 26;
+  --ink: 250 250 252;
+  --ink-muted: 161 161 170;
+  --accent: 96 165 250;
+  --accent-dim: 59 130 246;
+  --grid-line: 228 228 231;
+  --glow-1: 96 165 250;
+  --glow-2: 192 132 252;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-surface text-ink antialiased;
+}
+
+.glass-panel {
+  @apply rounded-2xl border border-black/10 bg-white/70 shadow-glass backdrop-blur-xl dark:border-white/10 dark:bg-black/40 dark:shadow-glass-dark;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgb(var(--ink) / 0.12);
+  box-shadow: 0 0 12px rgb(var(--accent) / 0.15);
+  animation: floaty 18s ease-in-out infinite;
+}
+
+.dark .particle {
+  background: rgb(var(--ink) / 0.08);
+  box-shadow: 0 0 14px rgb(var(--accent) / 0.12);
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-30%);
+  }
+  100% {
+    transform: translateX(30%);
+  }
+}
+
+.skeleton {
+  @apply relative overflow-hidden rounded-lg bg-surface-muted;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(var(--ink) / 0.06),
+    transparent
+  );
+  animation: shimmer 1.4s ease-in-out infinite;
+}
