@@ -12,6 +12,8 @@ export default function GoalsPage() {
   const [title, setTitle] = useState('');
   const [target, setTarget] = useState('');
   const [plan, setPlan] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [suggestingId, setSuggestingId] = useState<string | null>(null);
 
   const load = async () => {
     const { data } = await api.get('/goals');
@@ -24,15 +26,25 @@ export default function GoalsPage() {
 
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
-    await api.post('/goals', { title, targetAmount: Number(target) });
-    setTitle('');
-    setTarget('');
-    await load();
+    setIsAdding(true);
+    try {
+      await api.post('/goals', { title, targetAmount: Number(target) });
+      setTitle('');
+      setTarget('');
+      await load();
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   const suggest = async (id: string) => {
-    const { data } = await api.get(`/goals/${id}/savings-plan`);
-    setPlan(`Suggested monthly: ${data.suggestedMonthly} · ${data.aiNote || ''}`);
+    setSuggestingId(id);
+    try {
+      const { data } = await api.get(`/goals/${id}/savings-plan`);
+      setPlan(`Suggested monthly: ${data.suggestedMonthly} · ${data.aiNote || ''}`);
+    } finally {
+      setSuggestingId(null);
+    }
   };
 
   return (
@@ -59,7 +71,7 @@ export default function GoalsPage() {
             value={target}
             onChange={(e) => setTarget(e.target.value)}
           />
-          <Button type="submit">Add goal</Button>
+          <Button type="submit" loading={isAdding}>Add goal</Button>
         </form>
       </Card>
       <div className="grid gap-4 md:grid-cols-2">
@@ -74,7 +86,13 @@ export default function GoalsPage() {
                     <div className="text-xs text-ink-muted">By {format(new Date(g.deadline), 'yyyy-MM-dd')}</div>
                   ) : null}
                 </div>
-                <Button type="button" variant="ghost" className="!py-1 !text-xs" onClick={() => suggest(g._id)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="!py-1 !text-xs"
+                  onClick={() => suggest(g._id)}
+                  loading={suggestingId === g._id}
+                >
                   AI plan
                 </Button>
               </div>

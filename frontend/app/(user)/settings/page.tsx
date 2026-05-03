@@ -12,6 +12,8 @@ export default function SettingsPage() {
   const [currency, setCurrency] = useState('USD');
   const [rates, setRates] = useState<Record<string, number>>({});
   const [conv, setConv] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -29,14 +31,24 @@ export default function SettingsPage() {
 
   const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    await api.patch('/users/me', { name, preferredCurrency: currency });
-    await refreshMe();
+    setIsSaving(true);
+    try {
+      await api.patch('/users/me', { name, preferredCurrency: currency });
+      await refreshMe();
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const convert = async () => {
-    const [amt, from, to] = conv.split(',').map((s) => s.trim());
-    const { data } = await api.get('/currency/convert', { params: { amount: amt, from, to } });
-    alert(`Result: ${data.result} ${to}`);
+    setIsConverting(true);
+    try {
+      const [amt, from, to] = conv.split(',').map((s) => s.trim());
+      const { data } = await api.get('/currency/convert', { params: { amount: amt, from, to } });
+      alert(`Result: ${data.result} ${to}`);
+    } finally {
+      setIsConverting(false);
+    }
   };
 
   return (
@@ -69,7 +81,7 @@ export default function SettingsPage() {
               ))}
             </select>
           </label>
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" loading={isSaving}>
             Save
           </Button>
         </form>
@@ -86,7 +98,7 @@ export default function SettingsPage() {
             value={conv}
             onChange={(e) => setConv(e.target.value)}
           />
-          <Button type="button" variant="ghost" onClick={convert}>
+          <Button type="button" variant="ghost" onClick={convert} loading={isConverting}>
             Convert
           </Button>
         </div>

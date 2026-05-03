@@ -10,6 +10,8 @@ import { motion } from 'framer-motion';
 export default function CategoriesPage() {
   const [items, setItems] = useState<Category[]>([]);
   const [name, setName] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const load = async () => {
     const { data } = await api.get('/categories');
@@ -22,14 +24,24 @@ export default function CategoriesPage() {
 
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
-    await api.post('/categories', { name });
-    setName('');
-    await load();
+    setIsAdding(true);
+    try {
+      await api.post('/categories', { name });
+      setName('');
+      await load();
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   const del = async (id: string) => {
-    await api.delete(`/categories/${id}`);
-    await load();
+    setDeletingId(id);
+    try {
+      await api.delete(`/categories/${id}`);
+      await load();
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -47,7 +59,7 @@ export default function CategoriesPage() {
             onChange={(e) => setName(e.target.value)}
             required
           />
-          <Button type="submit">Add</Button>
+          <Button type="submit" loading={isAdding}>Add</Button>
         </form>
       </Card>
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -59,8 +71,13 @@ export default function CategoriesPage() {
                 {c.isDefault ? <div className="text-xs text-ink-muted">Default</div> : null}
               </div>
               {!c.isDefault ? (
-                <button type="button" className="text-xs text-red-500" onClick={() => del(c._id)}>
-                  Remove
+                <button
+                  type="button"
+                  className="text-xs text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => del(c._id)}
+                  disabled={deletingId === c._id}
+                >
+                  {deletingId === c._id ? 'Removing...' : 'Remove'}
                 </button>
               ) : null}
             </Card>

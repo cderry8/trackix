@@ -9,6 +9,8 @@ import { format } from 'date-fns';
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [actionId, setActionId] = useState<string | null>(null);
+  const [actionType, setActionType] = useState<'suspend' | 'unsuspend' | 'remove' | null>(null);
 
   const load = async () => {
     const { data } = await api.get('/admin/users');
@@ -20,19 +22,40 @@ export default function AdminUsersPage() {
   }, []);
 
   const suspend = async (id: string) => {
-    await api.post(`/admin/users/${id}/suspend`);
-    await load();
+    setActionId(id);
+    setActionType('suspend');
+    try {
+      await api.post(`/admin/users/${id}/suspend`);
+      await load();
+    } finally {
+      setActionId(null);
+      setActionType(null);
+    }
   };
 
   const unsuspend = async (id: string) => {
-    await api.post(`/admin/users/${id}/unsuspend`);
-    await load();
+    setActionId(id);
+    setActionType('unsuspend');
+    try {
+      await api.post(`/admin/users/${id}/unsuspend`);
+      await load();
+    } finally {
+      setActionId(null);
+      setActionType(null);
+    }
   };
 
   const remove = async (id: string) => {
     if (!confirm('Delete user and related data?')) return;
-    await api.delete(`/admin/users/${id}`);
-    await load();
+    setActionId(id);
+    setActionType('remove');
+    try {
+      await api.delete(`/admin/users/${id}`);
+      await load();
+    } finally {
+      setActionId(null);
+      setActionType(null);
+    }
   };
 
   return (
@@ -66,17 +89,35 @@ export default function AdminUsersPage() {
                   </td>
                   <td className="space-x-2 py-2 text-right">
                     {u.role !== 'admin' && u.suspended ? (
-                      <Button type="button" variant="ghost" className="!px-2 !py-1 !text-xs" onClick={() => unsuspend(u._id)}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="!px-2 !py-1 !text-xs"
+                        onClick={() => unsuspend(u._id)}
+                        loading={actionId === u._id && actionType === 'unsuspend'}
+                      >
                         Unsuspend
                       </Button>
                     ) : null}
                     {u.role !== 'admin' && !u.suspended ? (
-                      <Button type="button" variant="ghost" className="!px-2 !py-1 !text-xs" onClick={() => suspend(u._id)}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="!px-2 !py-1 !text-xs"
+                        onClick={() => suspend(u._id)}
+                        loading={actionId === u._id && actionType === 'suspend'}
+                      >
                         Suspend
                       </Button>
                     ) : null}
                     {u.role !== 'admin' ? (
-                      <Button type="button" variant="danger" className="!px-2 !py-1 !text-xs" onClick={() => remove(u._id)}>
+                      <Button
+                        type="button"
+                        variant="danger"
+                        className="!px-2 !py-1 !text-xs"
+                        onClick={() => remove(u._id)}
+                        loading={actionId === u._id && actionType === 'remove'}
+                      >
                         Delete
                       </Button>
                     ) : null}

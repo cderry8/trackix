@@ -143,7 +143,7 @@ export function LandingPage() {
             <div className="mt-12 flex flex-wrap gap-6 text-sm text-ink-muted">
               <div className="flex items-center gap-2">
                 <Lock className="h-4 w-4 text-accent-dim dark:text-accent" />
-                JWT-secured sessions
+                secured Application
               </div>
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-accent-dim dark:text-accent" />

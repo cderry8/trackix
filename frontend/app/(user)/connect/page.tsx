@@ -9,6 +9,9 @@ import { format } from 'date-fns';
 
 export default function ConnectPage() {
   const [items, setItems] = useState<UserConnection[]>([]);
+  const [connectingType, setConnectingType] = useState<'mtn' | 'bank' | null>(null);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [disconnectingId, setDisconnectingId] = useState<string | null>(null);
 
   const load = async () => {
     const { data } = await api.get('/connections');
@@ -22,18 +25,33 @@ export default function ConnectPage() {
   }, []);
 
   const connect = async (type: 'mtn' | 'bank') => {
-    await api.post('/connections/connect', { type });
-    await load();
+    setConnectingType(type);
+    try {
+      await api.post('/connections/connect', { type });
+      await load();
+    } finally {
+      setConnectingType(null);
+    }
   };
 
   const sync = async (id: string) => {
-    await api.post(`/connections/${id}/sync`);
-    await load();
+    setSyncingId(id);
+    try {
+      await api.post(`/connections/${id}/sync`);
+      await load();
+    } finally {
+      setSyncingId(null);
+    }
   };
 
   const disconnect = async (id: string) => {
-    await api.post(`/connections/${id}/disconnect`);
-    await load();
+    setDisconnectingId(id);
+    try {
+      await api.post(`/connections/${id}/disconnect`);
+      await load();
+    } finally {
+      setDisconnectingId(null);
+    }
   };
 
   return (
@@ -43,11 +61,11 @@ export default function ConnectPage() {
         <p className="text-sm text-ink-muted">Simulated MTN Mobile Money and bank feeds</p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <Button type="button" onClick={() => connect('mtn')}>
-          Connect MTN MoMo
+        <Button type="button" onClick={() => connect('mtn')} loading={connectingType === 'mtn'}>
+          Connect With Ur MTN MoMo
         </Button>
-        <Button type="button" variant="ghost" onClick={() => connect('bank')}>
-          Connect bank
+        <Button type="button" variant="ghost" onClick={() => connect('bank')} loading={connectingType === 'bank'}>
+          Connect With Ur bank
         </Button>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
@@ -59,10 +77,23 @@ export default function ConnectPage() {
               <div className="text-xs text-ink-muted">Last sync {format(new Date(c.lastSyncedAt), 'PPpp')}</div>
             ) : null}
             <div className="mt-3 flex flex-wrap gap-2">
-              <Button type="button" variant="ghost" className="!text-xs" onClick={() => sync(c._id)} disabled={c.status !== 'connected'}>
+              <Button
+                type="button"
+                variant="ghost"
+                className="!text-xs"
+                onClick={() => sync(c._id)}
+                disabled={c.status !== 'connected'}
+                loading={syncingId === c._id}
+              >
                 Sync now
               </Button>
-              <Button type="button" variant="ghost" className="!text-xs" onClick={() => disconnect(c._id)}>
+              <Button
+                type="button"
+                variant="ghost"
+                className="!text-xs"
+                onClick={() => disconnect(c._id)}
+                loading={disconnectingId === c._id}
+              >
                 Disconnect
               </Button>
             </div>

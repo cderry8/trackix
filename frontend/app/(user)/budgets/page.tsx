@@ -19,6 +19,8 @@ export default function BudgetsPage() {
   const [category, setCategory] = useState('');
   const [limit, setLimit] = useState('');
   const [month, setMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [isCreating, setIsCreating] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const load = async () => {
     const { data } = await api.get('/budgets/usage');
@@ -31,16 +33,26 @@ export default function BudgetsPage() {
 
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
-    const d = new Date(`${month}-01`);
-    await api.post('/budgets', { category, limit: Number(limit), month: d.toISOString() });
-    setCategory('');
-    setLimit('');
-    await load();
+    setIsCreating(true);
+    try {
+      const d = new Date(`${month}-01`);
+      await api.post('/budgets', { category, limit: Number(limit), month: d.toISOString() });
+      setCategory('');
+      setLimit('');
+      await load();
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const del = async (id: string) => {
-    await api.delete(`/budgets/${id}`);
-    await load();
+    setDeletingId(id);
+    try {
+      await api.delete(`/budgets/${id}`);
+      await load();
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -72,7 +84,7 @@ export default function BudgetsPage() {
             value={month}
             onChange={(e) => setMonth(e.target.value)}
           />
-          <Button type="submit">Create budget</Button>
+          <Button type="submit" loading={isCreating}>Create budget</Button>
         </form>
       </Card>
       <div className="grid gap-4 md:grid-cols-2">
@@ -85,8 +97,13 @@ export default function BudgetsPage() {
                   {format(new Date(u.budget.month), 'MMM yyyy')}
                 </div>
               </div>
-              <button type="button" className="text-xs text-red-500" onClick={() => del(u.budget._id)}>
-                Delete
+              <button
+                type="button"
+                className="text-xs text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => del(u.budget._id)}
+                disabled={deletingId === u.budget._id}
+              >
+                {deletingId === u.budget._id ? 'Deleting...' : 'Delete'}
               </button>
             </div>
             <div className="mt-3 font-mono text-sm">

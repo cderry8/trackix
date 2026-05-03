@@ -25,6 +25,7 @@ export function TransactionForm({
   );
   const [note, setNote] = useState(initial?.note ?? '');
   const [source, setSource] = useState<'manual' | 'connected'>(initial?.source ?? 'manual');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -36,6 +37,7 @@ export function TransactionForm({
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     const payload = {
       amount: Number(amount),
       type,
@@ -44,12 +46,16 @@ export function TransactionForm({
       note,
       source,
     };
-    if (initial) {
-      await api.patch(`/transactions/${initial._id}`, payload);
-    } else {
-      await api.post('/transactions', payload);
+    try {
+      if (initial) {
+        await api.patch(`/transactions/${initial._id}`, payload);
+      } else {
+        await api.post('/transactions', payload);
+      }
+      onDone?.() ?? router.push('/transactions');
+    } finally {
+      setIsLoading(false);
     }
-    onDone?.() ?? router.push('/transactions');
   };
 
   return (
@@ -120,7 +126,7 @@ export function TransactionForm({
             <option value="connected">Connected</option>
           </select>
         </label>
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" loading={isLoading}>
           Save
         </Button>
       </form>

@@ -8,20 +8,22 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function RegisterPage() {
-  const { register, user, loading } = useAuth();
+  const { register, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) router.replace('/dashboard');
-  }, [loading, user, router]);
+    if (!authLoading && user) router.replace('/dashboard');
+  }, [authLoading, user, router]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
     try {
       await register(name, email, password);
       router.replace('/dashboard');
@@ -30,6 +32,8 @@ export default function RegisterPage() {
         ? String((err.response.data as { message?: string }).message)
         : 'Registration failed';
       setError(msg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -79,7 +83,7 @@ export default function RegisterPage() {
             required
           />
         </label>
-        <Button className="w-full" type="submit">
+        <Button className="w-full" type="submit" loading={isLoading}>
           Start tracking
         </Button>
         <p className="text-center text-sm text-ink-muted">

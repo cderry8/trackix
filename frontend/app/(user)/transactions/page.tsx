@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 
 export default function TransactionsPage() {
   const [items, setItems] = useState<Transaction[]>([]);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const load = async () => {
     const { data } = await api.get('/transactions');
@@ -22,8 +23,13 @@ export default function TransactionsPage() {
   }, []);
 
   const del = async (id: string) => {
-    await api.delete(`/transactions/${id}`);
-    setItems((x) => x.filter((t) => t._id !== id));
+    setDeletingId(id);
+    try {
+      await api.delete(`/transactions/${id}`);
+      setItems((x) => x.filter((t) => t._id !== id));
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -71,8 +77,13 @@ export default function TransactionsPage() {
                     <Link href={`/transactions/${t._id}`} className="mr-3 text-xs text-accent-dim dark:text-accent">
                       Edit
                     </Link>
-                    <button type="button" className="text-xs text-red-500" onClick={() => del(t._id)}>
-                      Delete
+                    <button
+                      type="button"
+                      className="text-xs text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() => del(t._id)}
+                      disabled={deletingId === t._id}
+                    >
+                      {deletingId === t._id ? 'Deleting...' : 'Delete'}
                     </button>
                   </td>
                 </motion.tr>

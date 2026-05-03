@@ -8,24 +8,28 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function LoginPage() {
-  const { login, user, loading } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) router.replace('/dashboard');
-  }, [loading, user, router]);
+    if (!authLoading && user) router.replace('/dashboard');
+  }, [authLoading, user, router]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
     try {
       await login(email, password);
       router.replace('/dashboard');
     } catch {
       setError('Invalid credentials');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -65,7 +69,7 @@ export default function LoginPage() {
             required
           />
         </label>
-        <Button className="w-full" type="submit">
+        <Button className="w-full" type="submit" loading={isLoading}>
           Continue
         </Button>
         <p className="text-center text-sm text-ink-muted">
