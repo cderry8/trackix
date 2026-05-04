@@ -4,11 +4,20 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { api, loadStoredTokens, setTokens } from '@/lib/api';
 import type { User } from '@/types';
 
+type RegisterData = {
+  name: string;
+  email: string;
+  password: string;
+  phoneNumber?: string;
+  heardFrom?: string;
+  bankAccounts?: string[];
+};
+
 type AuthState = {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   refreshMe: () => Promise<void>;
 };
@@ -49,8 +58,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(data.user);
   };
 
-  const register = async (name: string, email: string, password: string) => {
-    const { data } = await api.post('/auth/register', { name, email, password });
+  const register = async (registerData: RegisterData) => {
+    const { data } = await api.post('/auth/register', registerData);
     setTokens(data.accessToken, data.refreshToken);
     setUser(data.user);
   };

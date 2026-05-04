@@ -6,14 +6,23 @@ import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/
 const DEFAULT_CATEGORIES = ['Salary', 'Food', 'Transport', 'Utilities', 'Entertainment', 'Health', 'Shopping', 'Other'];
 
 export async function register(req, res) {
-  const { name, email, password } = req.body;
+  const { name, email, password, phoneNumber, heardFrom, bankAccounts } = req.body;
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Name, email, password required' });
   }
   const exists = await User.findOne({ email });
   if (exists) return res.status(409).json({ message: 'Email already registered' });
   const hash = await bcrypt.hash(password, 10);
-  const user = await User.create({ name, email, password: hash, role: 'user' });
+  const userData = {
+    name,
+    email,
+    password: hash,
+    role: 'user',
+    phoneNumber: phoneNumber || null,
+    heardFrom: heardFrom || null,
+    bankAccounts: bankAccounts || [],
+  };
+  const user = await User.create(userData);
   for (const cat of DEFAULT_CATEGORIES) {
     await Category.create({ userId: user._id, name: cat, isDefault: true }).catch(() => {});
   }

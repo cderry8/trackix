@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema(
     refreshToken: { type: String, default: null },
     suspended: { type: Boolean, default: false },
     preferredCurrency: { type: String, enum: ['USD', 'EUR', 'RWF'], default: 'USD' },
+    phoneNumber: { type: String, trim: true, default: null },
+    heardFrom: { type: String, enum: ['social_media', 'friend', 'google', 'advertisement', 'other'], default: null },
+    bankAccounts: [{ type: String, trim: true }],
   },
   { timestamps: true }
 );
