@@ -7,8 +7,11 @@ import {
   ArrowLeft,
   ArrowRight,
   Building2,
+  Check,
   CheckCircle2,
   CreditCard,
+  Eye,
+  EyeOff,
   Mail,
   MessageCircle,
   Phone,
@@ -17,6 +20,7 @@ import {
   Smartphone,
   User,
   Users,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -63,6 +67,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (!authLoading && user) router.replace('/dashboard');
@@ -73,7 +78,7 @@ export default function RegisterPage() {
     if (step === 0) {
       if (!formData.name.trim()) return setError('Please enter your name');
       if (!formData.email.trim()) return setError('Please enter your email');
-      if (!formData.password || formData.password.length < 6) return setError('Password must be at least 6 characters');
+      if (!formData.password || formData.password.length < 8) return setError('Password must be at least 8 characters');
     }
     if (step === 1) {
       if (!formData.phoneNumber.trim()) return setError('Please enter your phone number');
@@ -138,6 +143,29 @@ export default function RegisterPage() {
   };
 
   const progress = ((step + 1) / STEPS.length) * 100;
+
+  // Password strength calculation
+  const getPasswordStrength = (password: string) => {
+    let score = 0;
+    const checks = {
+      length: password.length >= 8,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /\d/.test(password),
+      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+    };
+
+    if (checks.length) score++;
+    if (checks.lowercase && checks.uppercase) score++;
+    if (checks.number) score++;
+    if (checks.special) score++;
+
+    return { score, checks };
+  };
+
+  const passwordStrength = getPasswordStrength(formData.password);
+  const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong'];
+  const strengthColors = ['bg-red-500', 'bg-yellow-500', 'bg-blue-500', 'bg-green-500'];
 
   if (completed) {
     return (
@@ -286,14 +314,83 @@ export default function RegisterPage() {
                     <div className="relative mt-1">
                       <Shield className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
                       <input
-                        type="password"
-                        className="w-full rounded-xl border border-ink/15 bg-transparent py-2.5 pl-10 pr-4 text-sm outline-none focus:border-accent dark:border-white/15"
-                        placeholder="At least 6 characters"
+                        type={showPassword ? 'text' : 'password'}
+                        className="w-full rounded-xl border border-ink/15 bg-transparent py-2.5 pl-10 pr-10 text-sm outline-none focus:border-accent dark:border-white/15"
+                        placeholder="Create a strong password"
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        minLength={6}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted transition hover:text-ink"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
                     </div>
+
+                    {/* Password Strength Indicator */}
+                    {formData.password && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="mt-3 space-y-2"
+                      >
+                        {/* Strength bars */}
+                        <div className="flex gap-1">
+                          {[0, 1, 2, 3].map((i) => (
+                            <div
+                              key={i}
+                              className={cn(
+                                'h-1.5 flex-1 rounded-full transition-all duration-300',
+                                i < passwordStrength.score
+                                  ? strengthColors[passwordStrength.score - 1]
+                                  : 'bg-ink/10 dark:bg-white/10'
+                              )}
+                            />
+                          ))}
+                        </div>
+
+                        {/* Strength label */}
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-ink-muted">
+                            Strength: <span className={cn(
+                              passwordStrength.score >= 3 ? 'text-green-500' :
+                              passwordStrength.score >= 2 ? 'text-blue-500' :
+                              passwordStrength.score >= 1 ? 'text-yellow-500' : 'text-red-500'
+                            )}>
+                              {passwordStrength.score > 0 ? strengthLabels[passwordStrength.score - 1] : 'Very Weak'}
+                            </span>
+                          </span>
+                        </div>
+
+                        {/* Requirements checklist */}
+                        <div className="space-y-1 pt-1">
+                          {[
+                            { key: 'length', label: 'At least 8 characters' },
+                            { key: 'lowercase', label: 'One lowercase letter (a-z)' },
+                            { key: 'uppercase', label: 'One uppercase letter (A-Z)' },
+                            { key: 'number', label: 'One number (0-9)' },
+                            { key: 'special', label: 'One special character (!@#$...)' },
+                          ].map((req) => {
+                            const met = passwordStrength.checks[req.key as keyof typeof passwordStrength.checks];
+                            return (
+                              <div key={req.key} className="flex items-center gap-2 text-xs">
+                                <div className={cn(
+                                  'flex h-4 w-4 items-center justify-center rounded-full transition',
+                                  met ? 'bg-green-500/20 text-green-500' : 'bg-ink/10 text-ink-muted'
+                                )}>
+                                  {met ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                                </div>
+                                <span className={cn('transition', met ? 'text-ink' : 'text-ink-muted')}>
+                                  {req.label}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
                   </label>
                 </div>
               </div>
