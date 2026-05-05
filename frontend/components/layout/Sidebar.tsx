@@ -17,6 +17,7 @@ import {
   Users,
   LineChart,
   ScrollText,
+  User,
 } from 'lucide-react';
 
 type Item = { href: string; label: string; icon: React.ElementType };
@@ -29,6 +30,7 @@ const userNav: Item[] = [
   { href: '/goals', label: 'Goals', icon: Target },
   { href: '/ai', label: 'AI Insights', icon: Sparkles },
   { href: '/connect', label: 'Connections', icon: Link2 },
+  { href: '/profile', label: 'Profile', icon: User },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 

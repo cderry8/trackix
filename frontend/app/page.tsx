@@ -14,12 +14,7 @@ export default function Home() {
       router.replace('/dashboard');
     }
   }, [loading, user, router]);
-
-  // Show nothing while checking auth to prevent flash
   if (loading) return null;
-
-  // Only show landing page if not logged in
   if (user) return null;
-
   return <LandingPage />;
 }
