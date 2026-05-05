@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import type { Goal } from '@/types';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
+import { Target } from 'lucide-react';
 
 export default function GoalsPage() {
   const [items, setItems] = useState<Goal[]>([]);
@@ -74,38 +75,52 @@ export default function GoalsPage() {
           <Button type="submit" loading={isAdding}>Add goal</Button>
         </form>
       </Card>
-      <div className="grid gap-4 md:grid-cols-2">
-        {items.map((g) => {
-          const pct = g.targetAmount ? Math.min(100, (g.currentAmount / g.targetAmount) * 100) : 0;
-          return (
-            <Card key={g._id} tilt={false}>
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="font-medium">{g.title}</div>
-                  {g.deadline ? (
-                    <div className="text-xs text-ink-muted">By {format(new Date(g.deadline), 'yyyy-MM-dd')}</div>
-                  ) : null}
+      {items.length === 0 ? (
+        <Card tilt={false} className="py-12">
+          <div className="text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-ink/5 dark:bg-white/5">
+              <Target className="h-8 w-8 text-ink-muted" />
+            </div>
+            <h3 className="mt-4 font-semibold">No goals yet</h3>
+            <p className="mx-auto mt-2 max-w-sm text-sm text-ink-muted">
+              Set financial goals to track your progress and achieve your savings targets.
+            </p>
+          </div>
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {items.map((g) => {
+            const pct = g.targetAmount ? Math.min(100, (g.currentAmount / g.targetAmount) * 100) : 0;
+            return (
+              <Card key={g._id} tilt={false}>
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-medium">{g.title}</div>
+                    {g.deadline ? (
+                      <div className="text-xs text-ink-muted">By {format(new Date(g.deadline), 'yyyy-MM-dd')}</div>
+                    ) : null}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="!py-1 !text-xs"
+                    onClick={() => suggest(g._id)}
+                    loading={suggestingId === g._id}
+                  >
+                    AI plan
+                  </Button>
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="!py-1 !text-xs"
-                  onClick={() => suggest(g._id)}
-                  loading={suggestingId === g._id}
-                >
-                  AI plan
-                </Button>
-              </div>
-              <div className="mt-2 font-mono text-sm">
-                {g.currentAmount.toFixed(2)} / {g.targetAmount.toFixed(2)}
-              </div>
-              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-ink/10 dark:bg-white/10">
-                <div className="h-full rounded-full bg-emerald-500" style={{ width: `${pct}%` }} />
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+                <div className="mt-2 font-mono text-sm">
+                  {g.currentAmount.toFixed(2)} / {g.targetAmount.toFixed(2)}
+                </div>
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-ink/10 dark:bg-white/10">
+                  <div className="h-full rounded-full bg-emerald-500" style={{ width: `${pct}%` }} />
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

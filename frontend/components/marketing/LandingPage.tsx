@@ -72,35 +72,11 @@ const steps = [
   { n: '03', title: 'Steer with intelligence', body: 'Open the dashboard, set budgets, and let AI surface risks and opportunities.' },
 ];
 
-const stats = [
-  { value: '10K+', label: 'Active users' },
-  { value: '$2.4M', label: 'Transactions tracked' },
-  { value: '50+', label: 'Countries supported' },
-  { value: '99.9%', label: 'Uptime guaranteed' },
-];
-
-const testimonials = [
-  {
-    name: 'Sarah Chen',
-    role: 'Startup Founder',
-    avatar: 'SC',
-    content: 'Trackix helped us cut our burn rate by 23% in the first month. The AI insights spotted subscriptions we forgot about.',
-    rating: 5,
-  },
-  {
-    name: 'Michael Osei',
-    role: 'Finance Manager',
-    avatar: 'MO',
-    content: 'Finally, a tool that understands African markets. The multi-currency support and MTN MoMo integration are game-changers.',
-    rating: 5,
-  },
-  {
-    name: 'Emma Thompson',
-    role: 'Freelance Designer',
-    avatar: 'ET',
-    content: 'I went from spreadsheet chaos to financial clarity. The dashboard is beautiful and actually makes me want to check my finances.',
-    rating: 5,
-  },
+const highlights = [
+  { icon: Brain, title: 'AI-Powered', desc: 'Smart insights from your data' },
+  { icon: Shield, title: 'Secure', desc: 'Bank-grade encryption' },
+  { icon: Globe, title: 'Multi-Currency', desc: 'USD, EUR, RWF support' },
+  { icon: Zap, title: 'Real-time', desc: 'Instant updates & alerts' },
 ];
 
 const faqs = [
@@ -275,21 +251,24 @@ export function LandingPage() {
           </motion.div>
         </section>
 
-        {/* Stats Section */}
+        {/* Highlights Section */}
         <section className="border-y border-ink/10 bg-gradient-to-r from-accent/5 via-surface to-accent/5 py-16 dark:border-white/10 dark:from-accent/10 dark:via-black dark:to-accent/10">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-              {stats.map((stat, i) => (
+              {highlights.map((item, i) => (
                 <motion.div
-                  key={stat.label}
+                  key={item.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                   className="text-center"
                 >
-                  <div className="text-3xl font-bold text-ink dark:text-white sm:text-4xl">{stat.value}</div>
-                  <div className="mt-1 text-sm text-ink-muted">{stat.label}</div>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10">
+                    <item.icon className="h-6 w-6 text-accent-dim dark:text-accent" />
+                  </div>
+                  <div className="mt-3 text-sm font-semibold">{item.title}</div>
+                  <div className="mt-1 text-xs text-ink-muted">{item.desc}</div>
                 </motion.div>
               ))}
             </div>
@@ -356,7 +335,7 @@ export function LandingPage() {
                 </div>
               </div>
 
-              {/* Dashboard Mock Content */}
+              {/* Dashboard UI Preview */}
               <div className="grid gap-4 p-4 md:grid-cols-3">
                 {/* Balance Card */}
                 <div className="rounded-xl border border-ink/10 bg-gradient-to-br from-accent/20 to-accent/5 p-4 dark:border-white/10 dark:from-accent/30 dark:to-accent/10">
@@ -364,8 +343,8 @@ export function LandingPage() {
                     <span className="text-sm text-ink-muted">Total Balance</span>
                     <Wallet className="h-4 w-4 text-accent-dim dark:text-accent" />
                   </div>
-                  <div className="mt-2 text-2xl font-bold">$12,450.00</div>
-                  <div className="mt-1 text-xs text-green-500">+8.2% from last month</div>
+                  <div className="mt-2 h-8 w-32 rounded bg-ink/10 dark:bg-white/10" />
+                  <div className="mt-2 h-4 w-24 rounded bg-green-500/20" />
                 </div>
 
                 {/* Income Card */}
@@ -374,8 +353,8 @@ export function LandingPage() {
                     <span className="text-sm text-ink-muted">Monthly Income</span>
                     <TrendingUp className="h-4 w-4 text-green-500" />
                   </div>
-                  <div className="mt-2 text-2xl font-bold">$4,200.00</div>
-                  <div className="mt-1 text-xs text-ink-muted">3 sources</div>
+                  <div className="mt-2 h-8 w-32 rounded bg-ink/10 dark:bg-white/10" />
+                  <div className="mt-2 h-4 w-20 rounded bg-ink/5 dark:bg-white/5" />
                 </div>
 
                 {/* Expenses Card */}
@@ -384,8 +363,8 @@ export function LandingPage() {
                     <span className="text-sm text-ink-muted">Monthly Expenses</span>
                     <CreditCard className="h-4 w-4 text-red-400" />
                   </div>
-                  <div className="mt-2 text-2xl font-bold">$2,845.50</div>
-                  <div className="mt-1 text-xs text-green-500">Under budget</div>
+                  <div className="mt-2 h-8 w-32 rounded bg-ink/10 dark:bg-white/10" />
+                  <div className="mt-2 h-4 w-20 rounded bg-ink/5 dark:bg-white/5" />
                 </div>
 
                 {/* Chart Area */}
@@ -402,11 +381,11 @@ export function LandingPage() {
                       <div key={i} className="flex flex-1 flex-col items-center gap-1">
                         <div className="flex w-full gap-0.5">
                           <div
-                            className="flex-1 rounded-t bg-accent/60"
+                            className="flex-1 rounded-t bg-accent/40"
                             style={{ height: `${h * 0.7}%` }}
                           />
                           <div
-                            className="flex-1 rounded-t bg-red-400/60"
+                            className="flex-1 rounded-t bg-red-400/40"
                             style={{ height: `${h * 0.5}%` }}
                           />
                         </div>
@@ -416,23 +395,17 @@ export function LandingPage() {
                   </div>
                 </div>
 
-                {/* Recent Transactions */}
+                {/* Recent Transactions Preview */}
                 <div className="col-span-full md:col-span-2 rounded-xl border border-ink/10 bg-surface/40 p-4 dark:border-white/10 dark:bg-zinc-800/40">
                   <h3 className="font-semibold">Recent Transactions</h3>
                   <div className="mt-3 space-y-2">
-                    {[
-                      { name: 'Grocery Store', amount: '-$85.40', type: 'expense' },
-                      { name: 'Freelance Payment', amount: '+$1,200.00', type: 'income' },
-                      { name: 'Netflix Subscription', amount: '-$15.99', type: 'expense' },
-                    ].map((t, i) => (
+                    {[1, 2, 3].map((i) => (
                       <div key={i} className="flex items-center justify-between rounded-lg bg-surface/60 p-2 dark:bg-zinc-700/50">
                         <div className="flex items-center gap-2">
-                          <div className={cn('flex h-8 w-8 items-center justify-center rounded-full', t.type === 'income' ? 'bg-green-500/20' : 'bg-red-500/20')}>
-                            {t.type === 'income' ? <Plus className="h-4 w-4 text-green-500" /> : <DollarSign className="h-4 w-4 text-red-400" />}
-                          </div>
-                          <span className="text-sm font-medium">{t.name}</span>
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ink/10 dark:bg-white/10" />
+                          <div className="h-4 w-24 rounded bg-ink/10 dark:bg-white/10" />
                         </div>
-                        <span className={cn('text-sm font-semibold', t.type === 'income' ? 'text-green-500' : 'text-ink dark:text-white')}>{t.amount}</span>
+                        <div className="h-4 w-16 rounded bg-ink/10 dark:bg-white/10" />
                       </div>
                     ))}
                   </div>
@@ -444,9 +417,10 @@ export function LandingPage() {
                     <Sparkles className="h-4 w-4 text-accent-dim dark:text-accent" />
                     <span className="text-xs font-medium text-accent-dim dark:text-accent">AI Insight</span>
                   </div>
-                  <p className="mt-2 text-sm text-ink-muted">
-                    You&apos;ve reduced dining out expenses by 35% this month. Keep it up to hit your savings goal!
-                  </p>
+                  <div className="mt-2 space-y-2">
+                    <div className="h-3 w-full rounded bg-ink/10 dark:bg-white/10" />
+                    <div className="h-3 w-3/4 rounded bg-ink/10 dark:bg-white/10" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -470,52 +444,6 @@ export function LandingPage() {
                 <p className="mt-2 text-sm text-ink-muted">{s.body}</p>
               </motion.div>
             ))}
-          </div>
-        </section>
-
-        {/* Testimonials Section */}
-        <section className="border-y border-ink/10 bg-gradient-to-b from-surface via-accent/5 to-surface py-20 dark:border-white/10 dark:from-black dark:via-accent/10 dark:to-black">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <h2 className="text-2xl font-semibold sm:text-3xl">Loved by thousands</h2>
-              <p className="mx-auto mt-3 max-w-2xl text-ink-muted">
-                See what our users are saying about their Trackix experience.
-              </p>
-            </motion.div>
-
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
-              {testimonials.map((t, i) => (
-                <motion.div
-                  key={t.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="rounded-2xl border border-ink/10 bg-white/70 p-6 shadow-glass backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/70 dark:shadow-glass-dark"
-                >
-                  <div className="flex gap-1">
-                    {[...Array(t.rating)].map((_, j) => (
-                      <Star key={j} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="mt-4 text-sm leading-relaxed text-ink-muted">&quot;{t.content}&quot;</p>
-                  <div className="mt-4 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 font-semibold text-accent-dim dark:text-accent">
-                      {t.avatar}
-                    </div>
-                    <div>
-                      <div className="font-semibold">{t.name}</div>
-                      <div className="text-xs text-ink-muted">{t.role}</div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -584,7 +512,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+        <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}

@@ -7,12 +7,13 @@ import {
   ArrowLeft,
   BarChart3,
   Brain,
+  CheckCircle2,
   Eye,
   EyeOff,
+  Globe,
   Lock,
   Mail,
   Shield,
-  Sparkles,
   Zap,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -172,41 +173,47 @@ export default function LoginPage() {
         transition={{ duration: 0.4, delay: 0.1 }}
       >
         <div className="mx-auto max-w-md">
-          {/* Testimonial Card */}
+          {/* Welcome Card */}
           <div className="rounded-2xl border border-ink/10 bg-white/70 p-6 shadow-glass backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/70 dark:shadow-glass-dark">
-            <div className="flex gap-1">
-              {[...Array(5)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 + i * 0.1 }}
-                >
-                  <Sparkles className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                </motion.div>
-              ))}
-            </div>
-            <p className="mt-4 text-sm leading-relaxed text-ink">
-              &quot;Trackix transformed how I manage my finances. The AI insights are like having a personal financial advisor.&quot;
-            </p>
-            <div className="mt-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent-dim/20 font-semibold text-accent-dim dark:bg-accent/20 dark:text-accent">
-                JD
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-dim/20 dark:bg-accent/20">
+                <Brain className="h-6 w-6 text-accent-dim dark:text-accent" />
               </div>
               <div>
-                <div className="font-medium">John Doe</div>
-                <div className="text-xs text-ink-muted">Startup Founder</div>
+                <h3 className="font-semibold">Smart Financial Insights</h3>
+                <p className="text-xs text-ink-muted">AI-powered analysis of your spending patterns</p>
               </div>
+            </div>
+            <div className="mt-4 space-y-3">
+              {[
+                'Track expenses across multiple currencies',
+                'Set and monitor budgets with alerts',
+                'Visualize spending with interactive charts',
+                'Export data for tax and accounting',
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + i * 0.1 }}
+                  className="flex items-center gap-2 text-sm text-ink-muted"
+                >
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/20">
+                    <CheckCircle2 className="h-3 w-3 text-green-500" />
+                  </div>
+                  {item}
+                </motion.div>
+              ))}
             </div>
           </div>
 
           {/* Features */}
           <div className="mt-8 grid grid-cols-2 gap-4">
             {[
-              { icon: Brain, label: 'AI Insights' },
               { icon: BarChart3, label: 'Smart Analytics' },
               { icon: Zap, label: 'Real-time Sync' },
               { icon: Shield, label: 'Bank-grade Security' },
+              { icon: Globe, label: 'Multi-Currency' },
             ].map((feature, i) => (
               <motion.div
                 key={feature.label}

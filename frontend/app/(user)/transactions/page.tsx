@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
+import { Receipt } from 'lucide-react';
 
 export default function TransactionsPage() {
   const [items, setItems] = useState<Transaction[]>([]);
@@ -43,55 +44,73 @@ export default function TransactionsPage() {
           <Button type="button">Add transaction</Button>
         </Link>
       </div>
-      <Card tilt={false}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="text-ink-muted">
-              <tr>
-                <th className="pb-2">Date</th>
-                <th className="pb-2">Type</th>
-                <th className="pb-2">Category</th>
-                <th className="pb-2">Amount</th>
-                <th className="pb-2">Source</th>
-                <th className="pb-2" />
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((t, i) => (
-                <motion.tr
-                  key={t._id}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.02 }}
-                  className="border-t border-ink/10 dark:border-white/10"
-                >
-                  <td className="py-2 font-mono text-xs">{format(new Date(t.date), 'yyyy-MM-dd')}</td>
-                  <td className="py-2 capitalize">{t.type}</td>
-                  <td className="py-2">{t.category}</td>
-                  <td className="py-2 font-mono">
-                    {t.type === 'expense' ? '-' : '+'}
-                    {t.amount.toFixed(2)}
-                  </td>
-                  <td className="py-2 text-ink-muted">{t.source}</td>
-                  <td className="py-2 text-right">
-                    <Link href={`/transactions/${t._id}`} className="mr-3 text-xs text-accent-dim dark:text-accent">
-                      Edit
-                    </Link>
-                    <button
-                      type="button"
-                      className="text-xs text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={() => del(t._id)}
-                      disabled={deletingId === t._id}
-                    >
-                      {deletingId === t._id ? 'Deleting...' : 'Delete'}
-                    </button>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+
+      {items.length === 0 ? (
+        <Card tilt={false} className="py-12">
+          <div className="text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-ink/5 dark:bg-white/5">
+              <Receipt className="h-8 w-8 text-ink-muted" />
+            </div>
+            <h3 className="mt-4 font-semibold">No transactions yet</h3>
+            <p className="mx-auto mt-2 max-w-sm text-sm text-ink-muted">
+              Start tracking your income and expenses by adding your first transaction.
+            </p>
+            <Link href="/transactions/new" className="mt-4 inline-block">
+              <Button type="button">Add Your First Transaction</Button>
+            </Link>
+          </div>
+        </Card>
+      ) : (
+        <Card tilt={false}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="text-ink-muted">
+                <tr>
+                  <th className="pb-2">Date</th>
+                  <th className="pb-2">Type</th>
+                  <th className="pb-2">Category</th>
+                  <th className="pb-2">Amount</th>
+                  <th className="pb-2">Source</th>
+                  <th className="pb-2" />
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((t, i) => (
+                  <motion.tr
+                    key={t._id}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.02 }}
+                    className="border-t border-ink/10 dark:border-white/10"
+                  >
+                    <td className="py-2 font-mono text-xs">{format(new Date(t.date), 'yyyy-MM-dd')}</td>
+                    <td className="py-2 capitalize">{t.type}</td>
+                    <td className="py-2">{t.category}</td>
+                    <td className="py-2 font-mono">
+                      {t.type === 'expense' ? '-' : '+'}
+                      {t.amount.toFixed(2)}
+                    </td>
+                    <td className="py-2 text-ink-muted">{t.source}</td>
+                    <td className="py-2 text-right">
+                      <Link href={`/transactions/${t._id}`} className="mr-3 text-xs text-accent-dim dark:text-accent">
+                        Edit
+                      </Link>
+                      <button
+                        type="button"
+                        className="text-xs text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => del(t._id)}
+                        disabled={deletingId === t._id}
+                      >
+                        {deletingId === t._id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

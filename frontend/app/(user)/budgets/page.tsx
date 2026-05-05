@@ -87,40 +87,56 @@ export default function BudgetsPage() {
           <Button type="submit" loading={isCreating}>Create budget</Button>
         </form>
       </Card>
-      <div className="grid gap-4 md:grid-cols-2">
-        {usage.map((u) => (
-          <Card key={u.budget._id} tilt={false}>
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <div className="font-medium">{u.budget.category}</div>
-                <div className="text-xs text-ink-muted">
-                  {format(new Date(u.budget.month), 'MMM yyyy')}
+      {usage.length === 0 ? (
+        <Card tilt={false} className="py-12">
+          <div className="text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-ink/5 dark:bg-white/5">
+              <svg className="h-8 w-8 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="mt-4 font-semibold">No budgets yet</h3>
+            <p className="mx-auto mt-2 max-w-sm text-sm text-ink-muted">
+              Set up monthly budgets to track your spending and stay within your limits.
+            </p>
+          </div>
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {usage.map((u) => (
+            <Card key={u.budget._id} tilt={false}>
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="font-medium">{u.budget.category}</div>
+                  <div className="text-xs text-ink-muted">
+                    {format(new Date(u.budget.month), 'MMM yyyy')}
+                  </div>
                 </div>
+                <button
+                  type="button"
+                  className="text-xs text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => del(u.budget._id)}
+                  disabled={deletingId === u.budget._id}
+                >
+                  {deletingId === u.budget._id ? 'Deleting...' : 'Delete'}
+                </button>
               </div>
-              <button
-                type="button"
-                className="text-xs text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={() => del(u.budget._id)}
-                disabled={deletingId === u.budget._id}
-              >
-                {deletingId === u.budget._id ? 'Deleting...' : 'Delete'}
-              </button>
-            </div>
-            <div className="mt-3 font-mono text-sm">
-              Spent {u.spent.toFixed(2)} / {u.budget.limit.toFixed(2)} · Remaining {u.remaining.toFixed(2)}
-            </div>
-            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-ink/10 dark:bg-white/10">
-              <div
-                className={`h-full rounded-full ${u.percent > 100 ? 'bg-red-500' : 'bg-accent'}`}
-                style={{ width: `${Math.min(100, u.percent)}%` }}
-              />
-            </div>
-            {u.percent > 100 ? (
-              <div className="mt-2 text-xs text-red-500">Overspending</div>
-            ) : null}
-          </Card>
-        ))}
-      </div>
+              <div className="mt-3 font-mono text-sm">
+                Spent {u.spent.toFixed(2)} / {u.budget.limit.toFixed(2)} · Remaining {u.remaining.toFixed(2)}
+              </div>
+              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-ink/10 dark:bg-white/10">
+                <div
+                  className={`h-full rounded-full ${u.percent > 100 ? 'bg-red-500' : 'bg-accent'}`}
+                  style={{ width: `${Math.min(100, u.percent)}%` }}
+                />
+              </div>
+              {u.percent > 100 ? (
+                <div className="mt-2 text-xs text-red-500">Overspending</div>
+              ) : null}
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
