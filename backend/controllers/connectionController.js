@@ -7,7 +7,7 @@ export async function list(req, res) {
 }
 
 export async function connect(req, res) {
-  const { type, displayName } = req.body;
+  const { type, displayName, bankId, accountNumber, accountName, phoneNumber } = req.body;
   if (!['mtn', 'bank'].includes(type)) return res.status(400).json({ message: 'type must be mtn or bank' });
   let conn = await Connection.findOne({ userId: req.user.id, type });
   if (!conn) {
@@ -15,17 +15,40 @@ export async function connect(req, res) {
       userId: req.user.id,
       type,
       status: 'connecting',
-      displayName: displayName || (type === 'mtn' ? 'MTN Mobile Money' : 'Linked Bank'),
+      bankId: bankId || '',
+      bankName: bankId ? getBankName(bankId) : '',
+      accountNumber: accountNumber || '',
+      displayName: displayName || accountName || (type === 'mtn' ? 'MTN Mobile Money' : 'Linked Bank'),
     });
   } else {
     conn.status = 'connecting';
     if (displayName) conn.displayName = displayName;
+    if (accountName) conn.displayName = accountName;
+    if (bankId) {
+      conn.bankId = bankId;
+      conn.bankName = getBankName(bankId);
+    }
+    if (accountNumber) conn.accountNumber = accountNumber;
     await conn.save();
   }
   setTimeout(async () => {
     await Connection.findByIdAndUpdate(conn._id, { status: 'connected', lastSyncedAt: new Date() });
   }, 1200);
   return res.json(conn);
+}
+
+function getBankName(bankId) {
+  const banks = {
+    bk: 'Bank of Kigali',
+    bpr: 'BPR Bank',
+    im: 'I&M Bank',
+    equity: 'Equity Bank',
+    cogebanque: 'COGEBANQUE',
+    gt: 'GTBank',
+    access: 'Access Bank',
+    kcb: 'KCB Rwanda',
+  };
+  return banks[bankId] || 'Bank Account';
 }
 
 export async function disconnect(req, res) {

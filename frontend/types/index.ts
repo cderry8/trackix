@@ -47,6 +47,9 @@ export interface UserConnection {
   _id: string;
   type: 'mtn' | 'bank';
   status: string;
+  bankId?: string;
+  bankName?: string;
+  accountNumber?: string;
   lastSyncedAt?: string | null;
   displayName?: string;
 }
