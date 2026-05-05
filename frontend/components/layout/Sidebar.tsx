@@ -18,6 +18,7 @@ import {
   LineChart,
   ScrollText,
   User,
+  Receipt,
 } from 'lucide-react';
 
 type Item = { href: string; label: string; icon: React.ElementType };
@@ -25,6 +26,7 @@ type Item = { href: string; label: string; icon: React.ElementType };
 const userNav: Item[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/transactions', label: 'Transactions', icon: Wallet },
+  { href: '/subscriptions', label: 'Subscriptions', icon: Receipt },
   { href: '/categories', label: 'Categories', icon: Tags },
   { href: '/budgets', label: 'Budgets', icon: PiggyBank },
   { href: '/goals', label: 'Goals', icon: Target },

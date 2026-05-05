@@ -19,6 +19,7 @@ import currencyRoutes from './routes/currency.js';
 import connRoutes from './routes/connections.js';
 import dashRoutes from './routes/dashboard.js';
 import adminRoutes from './routes/admin.js';
+import subscriptionRoutes from './routes/subscriptions.js';
 
 const app = express();
 app.use(
@@ -44,6 +45,7 @@ app.use('/api/notifications', notifRoutes);
 app.use('/api/currency', currencyRoutes);
 app.use('/api/connections', connRoutes);
 app.use('/api/dashboard', dashRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/admin', adminRoutes);
 
 app.use(errorHandler);

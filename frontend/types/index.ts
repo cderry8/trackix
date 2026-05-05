@@ -70,3 +70,22 @@ export interface NotificationItem {
   read: boolean;
   createdAt: string;
 }
+
+export interface Subscription {
+  _id: string;
+  userId: string;
+  name: string;
+  provider: string;
+  category: string;
+  amount: number;
+  currency: string;
+  frequency: 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+  nextBillingDate: string;
+  status: 'active' | 'paused' | 'cancelled';
+  description?: string;
+  website?: string;
+  icon?: string;
+  color?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
