@@ -11,17 +11,20 @@ export function setTokens(access: string | null, refresh: string | null) {
   accessToken = access;
   refreshToken = refresh;
   if (typeof window !== 'undefined') {
+    // Access token in localStorage for persistence across tabs
     if (access) localStorage.setItem('accessToken', access);
     else localStorage.removeItem('accessToken');
-    if (refresh) localStorage.setItem('refreshToken', refresh);
-    else localStorage.removeItem('refreshToken');
+    // Refresh token in sessionStorage for security (cleared when tab closes)
+    if (refresh) sessionStorage.setItem('refreshToken', refresh);
+    else sessionStorage.removeItem('refreshToken');
   }
 }
 
 export function loadStoredTokens() {
   if (typeof window === 'undefined') return;
   accessToken = localStorage.getItem('accessToken');
-  refreshToken = localStorage.getItem('refreshToken');
+  // Refresh token from sessionStorage (more secure, tab-scoped)
+  refreshToken = sessionStorage.getItem('refreshToken');
   return { accessToken, refreshToken };
 }
 
@@ -43,7 +46,7 @@ api.interceptors.response.use(
   (r) => r,
   async (error) => {
     const original = error.config;
-    const rt = refreshToken || (typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null);
+    const rt = refreshToken || (typeof window !== 'undefined' ? sessionStorage.getItem('refreshToken') : null);
     if (error.response?.status === 401 && !original._retry && rt) {
       original._retry = true;
       try {
