@@ -138,7 +138,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Dashboard</h1>
-          <p className="text-sm text-ink-muted">Welcome back! Here's your financial overview</p>
+          <p className="text-sm text-ink-muted">Welcome back! Here&apos;s your financial overview</p>
         </div>
         <div className="flex gap-2">
           <Link href="/transactions/new">
