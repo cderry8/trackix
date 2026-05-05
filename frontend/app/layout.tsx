@@ -5,6 +5,7 @@ import { Providers } from './providers';
 import { SceneBackground } from '@/components/visual/SceneBackground';
 import { Analytics } from '@vercel/analytics/next';
 import { PageProgress } from '@/components/ui/PageProgress';
+import { Suspense } from 'react';
 
 
 const inter = Inter({
@@ -24,7 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body className="font-sans">
         <Providers>
-          <PageProgress />
+          <Suspense fallback={null}>
+            <PageProgress />
+          </Suspense>
           <SceneBackground />
           <div className="relative min-h-screen">{children}</div>
         </Providers>
