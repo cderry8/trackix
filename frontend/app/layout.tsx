@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: 'Trackix — Know where every dollar goes',
   description:
     'AI-powered expense tracking, budgets, goals, and simulated bank connections—in a premium fintech dashboard. Sign up free.',
+     icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

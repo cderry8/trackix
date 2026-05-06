@@ -89,3 +89,17 @@ export interface Subscription {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface Review {
+  _id: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  status: 'pending' | 'approved' | 'rejected';
+  adminNotes?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}

@@ -19,6 +19,7 @@ import {
   ScrollText,
   User,
   Receipt,
+  MessageSquare,
 } from 'lucide-react';
 
 type Item = { href: string; label: string; icon: React.ElementType };
@@ -33,12 +34,14 @@ const userNav: Item[] = [
   { href: '/ai', label: 'AI Insights', icon: Sparkles },
   { href: '/connect', label: 'Connections', icon: Link2 },
   { href: '/profile', label: 'Profile', icon: User },
+  { href: '/review', label: 'Leave Review', icon: MessageSquare },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 const adminNav: Item[] = [
   { href: '/admin', label: 'Overview', icon: Shield },
   { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/reviews', label: 'Reviews', icon: MessageSquare },
   { href: '/admin/analytics', label: 'Analytics', icon: LineChart },
   { href: '/admin/logs', label: 'Logs', icon: ScrollText },
 ];

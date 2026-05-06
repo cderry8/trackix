@@ -28,6 +28,7 @@ import {
   Wallet,
   Zap,
   X,
+  Quote,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -129,13 +130,41 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+interface Review {
+  _id: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
 export function LandingPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
 
   useEffect(() => {
     if (!loading && user) router.replace('/dashboard');
   }, [loading, user, router]);
+
+  useEffect(() => {
+    // Fetch approved reviews for landing page
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch('/api/reviews/public');
+        if (res.ok) {
+          const data = await res.json();
+          setReviews(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch reviews:', err);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+    fetchReviews();
+  }, []);
 
   if (loading) {
     return (
@@ -473,6 +502,90 @@ export function LandingPage() {
             ))}
           </motion.div>
         </section>
+
+        {/* Reviews Section */}
+        {reviews.length > 0 && (
+          <section className="border-y border-ink/10 bg-ink/[0.02] py-20 dark:border-white/10 dark:bg-white/[0.02]">
+            <div className="mx-auto max-w-6xl px-4 sm:px-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center"
+              >
+                <h2 className="text-2xl font-semibold sm:text-3xl">What our users say</h2>
+                <p className="mx-auto mt-3 max-w-xl text-ink-muted">
+                  Real feedback from people using Trackix to manage their finances.
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              >
+                {reviewsLoading ? (
+                  [1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="h-48 rounded-2xl border border-ink/10 bg-surface/50 p-6 dark:border-white/10 dark:bg-zinc-950/50"
+                    >
+                      <div className="h-4 w-24 rounded bg-ink/10 dark:bg-white/10" />
+                      <div className="mt-2 h-4 w-32 rounded bg-ink/10 dark:bg-white/10" />
+                      <div className="mt-4 space-y-2">
+                        <div className="h-3 w-full rounded bg-ink/10 dark:bg-white/10" />
+                        <div className="h-3 w-3/4 rounded bg-ink/10 dark:bg-white/10" />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  reviews.map((review, i) => (
+                    <motion.div
+                      key={review._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.1 }}
+                      className="relative rounded-2xl border border-ink/10 bg-white/60 p-6 backdrop-blur dark:border-white/10 dark:bg-zinc-950/60"
+                    >
+                      <Quote className="absolute right-4 top-4 h-8 w-8 text-accent-dim/20 dark:text-accent/20" />
+                      <div className="flex items-center gap-1 mb-3">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={cn(
+                              'h-4 w-4',
+                              star <= review.rating
+                                ? 'fill-amber-400 text-amber-400'
+                                : 'text-ink/20 dark:text-white/20'
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-sm leading-relaxed text-ink-muted">&ldquo;{review.comment}&rdquo;</p>
+                      <div className="mt-4 flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-dim/10 dark:bg-accent/10">
+                          <User className="h-4 w-4 text-accent-dim dark:text-accent" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{review.userName}</p>
+                          <p className="text-xs text-ink-muted">
+                            {new Date(review.createdAt).toLocaleDateString('en-US', {
+                              month: 'short',
+                              year: 'numeric',
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+              </motion.div>
+            </div>
+          </section>
+        )}
 
         {/* Trust Badges Section */}
         <section className="border-y border-ink/10 bg-ink/[0.02] py-16 dark:border-white/10 dark:bg-white/[0.02]">
